@@ -4,8 +4,8 @@ module TransactionRetry
   module ActiveRecord
     module Base
 
-      def self.included( base )
-        base.extend( ClassMethods )
+      def self.included(base)
+        base.extend(ClassMethods)
       end
       
       module ClassMethods
@@ -21,12 +21,12 @@ module TransactionRetry
             
             retry_count += 1
             postfix = { 1 => 'st', 2 => 'nd', 3 => 'rd' }[retry_count] || 'th'
-            logger.warn "Transaction isolation conflict detected. Retrying for the #{retry_count}-#{postfix} time..." if logger
+            logger.warn "Transaction isolation conflict detected. Retrying for the #{retry_count}#{postfix} time..." if logger
 
             # Sleep 0, 1, 2, 4, ... seconds up to the TransactionRetry.max_retries.
             # Cap the sleep time at 32 seconds.
-            seconds = TransactionRetry.wait_times[count-1] || 32
-            sleep( seconds ) if seconds > 0
+            seconds = TransactionRetry.wait_times[retry_count - 1] || 32
+            sleep(seconds) if seconds > 0
             retry
           end
         end
